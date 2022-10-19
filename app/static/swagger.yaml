@@ -1,0 +1,1058 @@
+openapi: 3.0.0
+info:
+  version: "1.0.0"
+  title: "Lunch API"
+  description: "This is a Lunch API"
+servers:
+  - url: http://0.0.0.0:5000
+tags:
+  - name: "Restaurants"
+    description: "About the restaurants"
+  - name: "Menus"
+    description: "About the menus of restaurants for each day"
+  - name: "Authentication"
+    description: "Authentication of employees or admins"
+  - name: "Employees"
+    description: "Employee information"
+  - name: "Choices"
+    description: "About choice where to go for a lunch"
+paths:
+  /api/restaurants/:
+    get:
+      tags:
+        - "Restaurants"
+      summary: "Get restaurants information"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantsOut'
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - "Restaurants"
+      summary: "Create new restaurant"
+      description: "This can only be done by the logged in admin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantIn'
+      responses:
+        '201':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                id: "5"
+        '400':
+          description: "Wrong input data"
+          content:
+            application/json:
+              example:
+                message: "Please, specify 'name'"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '403':
+          description: "Admin access rights required"
+          content:
+            application/json:
+              example:
+                message: "Forbidden"
+  /api/restaurants/{id}:
+    get:
+      tags:
+        - "Restaurants"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of restaurant"
+          required: true
+          schema:
+            type: "integer"
+      summary: "Get restaurant by id"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestaurantOut'
+        '404':
+          description: "Restaurant not found"
+          content:
+            application/json:
+              example:
+                message: "Restaurant not found"
+    patch:
+      security:
+        - bearerAuth: []
+      tags:
+        - "Restaurants"
+      summary: "Update restaurant's information"
+      description: "This can only be done by the logged in admin"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of restaurant"
+          required: true
+          schema:
+            type: "integer"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantIn'
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                message: "Updated"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '403':
+          description: "Admin access rights required"
+          content:
+            application/json:
+              example:
+                message: "Forbidden"
+        '404':
+          description: "Wrong restaurant's id"
+          content:
+            application/json:
+              example:
+                message: "Restaurant not found"
+    delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - "Restaurants"
+      summary: "Delete restaurant"
+      description: "This can only be done by the logged in admin"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the restaurant"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                message: "Deleted"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '403':
+          description: "Admin access rights required"
+          content:
+            application/json:
+              example:
+                message: "Forbidden"
+        '404':
+          description: "Wrong restaurant's id"
+          content:
+            application/json:
+              example:
+                message: "Restaurant not found"
+  /api/menus/:
+    get:
+      tags:
+        - "Menus"
+      summary: "Get menus information"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenusOut'
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - "Menus"
+      summary: "Create new menu"
+      description: "This can only be done by the logged in admin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuIn'
+      responses:
+        '201':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                id: "1"
+        '400':
+          description: "Wrong input data"
+          content:
+            application/json:
+              example:
+                message: 'Please, specify "restaurant_id","monday", "tuesday", 
+                "wednesday", "thursday", "friday", "saturday", "sunday"'
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '403':
+          description: "Admin access rights required"
+          content:
+            application/json:
+              example:
+                message: "Forbidden"
+  /api/menus/{id}:
+    get:
+      tags:
+        - "Menus"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of menu"
+          required: true
+          schema:
+            type: "integer"
+      summary: "Get menu by id"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MenuOut'
+        '404':
+          description: "Menu not found"
+          content:
+            application/json:
+              example:
+                message: "Menu not found"
+    patch:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - "Menus"
+      summary: "Update menu's information"
+      description: "This can only be done by the logged in admin"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of menu"
+          required: true
+          schema:
+            type: "integer"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MenuIn'
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                message: "Updated"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '403':
+          description: "Admin access rights required"
+          content:
+            application/json:
+              example:
+                message: "Forbidden"
+        '404':
+          description: "Wrong menu's id"
+          content:
+            application/json:
+              example:
+                message: "Menu not found"
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - "Menus"
+      summary: "Delete menu"
+      description: "This can only be done by the logged in admin"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the menu"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                message: "Deleted"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '403':
+          description: "Admin access rights required"
+          content:
+            application/json:
+              example:
+                message: "Forbidden"
+        '404':
+          description: "Wrong menu's id"
+          content:
+            application/json:
+              example:
+                message: "Menu not found"
+  /api/auth/registration:
+    post:
+      tags:
+        - "Authentication"
+      summary: "Registration of a new employee"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserIn'
+      responses:
+        '201':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                id: "5"
+                access_token: "{access_token}"
+                refresh_token: "{refresh_token}"
+        '400':
+          description: "Wrong input data"
+          content:
+            application/json:
+              example:
+                message: "Please, specify 'firstname', 'lastname', 'email', 'password' and 'is_admin'"
+        '404':
+          description: "Wrong input email"
+          content:
+            application/json:
+              example:
+                message: "Email {email} already used"
+        '500':
+          description: "Error occurred"
+          content:
+            application/json:
+              example:
+                message: "Something went wrong while creating"
+                error: "{error}"
+  /api/auth/login:
+    post:
+      tags:
+        - "Authentication"
+      summary: "Login as an employee"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogIn'
+      responses:
+        '201':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                message: "Logged in as {user.firstname, user.lastname, user.email}"
+                access_token: "{access_token}"
+                refresh_token: "{refresh_token}"
+        '400':
+          description: "Wrong input data"
+          content:
+            application/json:
+              example:
+                message: "Please, provide 'email' and 'password' in body"
+        '404':
+          description: "Wrong input email or password"
+          content:
+            application/json:
+              example:
+                message: "User with email {email} doesn't exist"
+  /api/auth/refresh:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - "Authentication"
+      summary: "Refresh access token"
+      description: "This can only be done by the logged in user with refresh token"
+      responses:
+        '201':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                access_token: "{access_token}"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '404':
+          description: "Wrong input email"
+          content:
+            application/json:
+              example:
+                message: "User with email {email} doesn't exist"
+        '422':
+          description: "Refresh token required"
+          content:
+            application/json:
+              example:
+                msg: "Only refresh tokens are allowed"
+  /api/auth/logout-access:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - "Authentication"
+      summary: "Revoke access token"
+      description: "This can only be done by the logged in user"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                message: "Access token has been revoked"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '500':
+          description: "Error occurred"
+          content:
+            application/json:
+              example:
+                message: "Something went wrong while creating"
+                error: "{error}"
+  /api/auth/logout-refresh:
+    post:
+      security:
+        - bearerAuth: []
+      tags:
+        - "Authentication"
+      summary: "Revoke refresh token"
+      description: "This can only be done by the logged in user with refresh token"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                message: "Refresh token has been revoked"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '500':
+          description: "Error occurred"
+          content:
+            application/json:
+              example:
+                message: "Something went wrong while creating"
+                error: "{error}"
+  /api/employees/:
+    get:
+      tags:
+        - "Employees"
+      security:
+        - bearerAuth: [ ]
+      summary: "Get employees information"
+      parameters:
+        - name: "firstname"
+          in: "query"
+          description: "Firstname of employee"
+          required: false
+          schema:
+            type: "string"
+        - name: "lastname"
+          in: "query"
+          description: "Lastname of employee"
+          required: false
+          schema:
+            type: "string"
+        - name: "email"
+          in: "query"
+          description: "Email of employee"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersOut'
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - "Employees"
+      summary: "Create new employee"
+      description: "This can only be done by the logged in admin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserIn'
+      responses:
+        '201':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                id: "5"
+        '400':
+          description: "Wrong input data"
+          content:
+            application/json:
+              example:
+                message: "Please, specify 'firstname', 'lastname', 'email', 'password' and 'is_admin'"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '403':
+          description: "Admin access rights required"
+          content:
+            application/json:
+              example:
+                message: "Forbidden"
+        '404':
+          description: "Wrong input email"
+          content:
+            application/json:
+              example:
+                message: "Email {email} already used"
+  /api/employees/{id}:
+    get:
+      tags:
+        - "Employees"
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Employee ID"
+          required: true
+          schema:
+            type: "integer"
+      summary: "Get employee by id"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOut'
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '404':
+          description: "Employee not found"
+          content:
+            application/json:
+              example:
+                message: "Employee not found"
+    patch:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - "Employees"
+      summary: "Update user's information"
+      description: "This can only be done by the logged in user"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of employee"
+          required: true
+          schema:
+            type: "integer"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserIn'
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                message: "Updated"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '403':
+          description: "Admin access rights required"
+          content:
+            application/json:
+              example:
+                message: "Forbidden"
+        '404':
+          description: "Wrong employee's id"
+          content:
+            application/json:
+              example:
+                message: "Employee not found"
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - "Employees"
+      summary: "Delete employee"
+      description: "This can only be done by the logged in user"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the employee"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                message: "Deleted"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '403':
+          description: "Admin access rights required"
+          content:
+            application/json:
+              example:
+                message: "Forbidden"
+        '404':
+          description: "Wrong employee's id"
+          content:
+            application/json:
+              example:
+                message: "Employee not found"
+        '405':
+          description: "Admin access required"
+          content:
+            application/json:
+              example:
+                message: "Not allowed"
+  /api/employees/inactive:
+    get:
+      tags:
+        - "Employees"
+      security:
+        - bearerAuth: [ ]
+      summary: "Get inactive employees information"
+      description: "This can only be done by the logged in admin"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersOut'
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '403':
+          description: "Admin access rights required"
+          content:
+            application/json:
+              example:
+                message: "Forbidden"
+  /api/employees/current:
+    get:
+      tags:
+        - "Employees"
+      security:
+        - bearerAuth: [ ]
+      summary: "Get current employee information by email"
+      description: "This can only be done by the logged in user"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOut'
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+  /api/choices/:
+    post:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - "Choices"
+      summary: "Create new choice"
+      description: "This can only be done by the logged in employee"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChoiceIn'
+      responses:
+        '201':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                id: "5"
+        '400':
+          description: "Wrong input data"
+          content:
+            application/json:
+              example:
+                message: "Please, specify 'menu_id'"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+  /api/choices/{id}:
+    get:
+      tags:
+        - "Choices"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of choice"
+          required: true
+          schema:
+            type: "integer"
+      summary: "Get choice by id"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChoiceOut'
+        '404':
+          description: "Choice not found"
+          content:
+            application/json:
+              example:
+                message: "Choice not found"
+    patch:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - "Choices"
+      summary: "Update choice's information"
+      description: "This can only be done by the logged in employee"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of choice"
+          required: true
+          schema:
+            type: "integer"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChoiceIn'
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                message: "Updated"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '404':
+          description: "Wrong choice's id"
+          content:
+            application/json:
+              example:
+                message: "Choice not found"
+    delete:
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - "Choices"
+      summary: "Delete choice"
+      description: "This can only be done by the logged in employee"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of the choice"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              example:
+                message: "Deleted"
+        '401':
+          description: "Require authorized user"
+          content:
+            application/json:
+              example:
+                msg: "Missing Authorization Header"
+        '404':
+          description: "Wrong choice's id"
+          content:
+            application/json:
+              example:
+                message: "Choice not found"
+  /api/choices/current:
+    get:
+      tags:
+        - "Choices"
+      summary: "Get current day choices information"
+      responses:
+        '200':
+          description: "Successful Operation"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChoicesOut'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RestaurantOut:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          example: 1
+        name:
+          type: "string"
+          example: "McDonald's"
+        menus:
+          type: "array"
+          example: []
+    RestaurantsOut:
+      type: "array"
+      items:
+        $ref: '#/components/schemas/RestaurantOut'
+    RestaurantIn:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          example: "Starbucks"
+    MenuOut:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          example: 1
+        restaurant_id:
+          type: "integer"
+          example: 2
+        monday:
+          type: "string"
+          example: "Soup"
+        wednesday:
+          type: "string"
+          example: "Cheese"
+        thursday:
+          type: "string"
+          example: "Salad"
+        friday:
+          type: "string"
+          example: "Tomato"
+        saturday:
+          type: "string"
+          example: "Bread"
+        sunday:
+          type: "string"
+          example: "Cookies"
+    MenusOut:
+      type: "array"
+      items:
+        $ref: '#/components/schemas/MenuOut'
+    MenuIn:
+      type: "object"
+      properties:
+        restaurant_id:
+          type: "integer"
+          example: 2
+        monday:
+          type: "string"
+          example: "Soup"
+        tuesday:
+          type: "string"
+          example: "Potato"
+        wednesday:
+          type: "string"
+          example: "Cheese"
+        thursday:
+          type: "string"
+          example: "Salad"
+        friday:
+          type: "string"
+          example: "Tomato"
+        saturday:
+          type: "string"
+          example: "Bread"
+        sunday:
+          type: "string"
+          example: "Cookies"
+    UserIn:
+      type: "object"
+      properties:
+        firstname:
+          type: "string"
+          example: "John"
+        lastname:
+          type: "string"
+          example: "Doe"
+        email:
+          type: "string"
+          example: "test@gmail.com"
+        password:
+          type: "string"
+          example: "password"
+        is_admin:
+          type: "boolean"
+          example: true
+    LogIn:
+      type: "object"
+      properties:
+        email:
+          type: "string"
+          example: "test@gmail.com"
+        password:
+          type: "string"
+          example: "password"
+    UserOut:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          example: 1
+        firstname:
+          type: "string"
+          example: "John"
+        lastname:
+          type: "string"
+          example: "Doe"
+        email:
+          type: "string"
+          example: "test@gmail.com"
+        is_admin:
+          type: "boolean"
+          example: true
+        is_active:
+          type: "boolean"
+          example: true
+    UsersOut:
+      type: "array"
+      items:
+        $ref: '#/components/schemas/UserOut'
+    ChoiceOut:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          example: 1
+        current_day:
+          type: "string"
+          example: "2022-10-19"
+        employee:
+          type: "array"
+          example: [ ]
+        restaurant:
+          type: "string"
+          example: "McDonald's"
+    ChoicesOut:
+      type: "array"
+      items:
+        $ref: '#/components/schemas/ChoiceOut'
+    ChoiceIn:
+      type: "object"
+      properties:
+        menu_id:
+          type: "string"
+          example: "2"
